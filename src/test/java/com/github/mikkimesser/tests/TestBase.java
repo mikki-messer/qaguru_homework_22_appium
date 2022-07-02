@@ -3,6 +3,7 @@ package com.github.mikkimesser.tests;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
 import com.github.mikkimesser.drivers.BrowserstackMobileDriver;
+import com.github.mikkimesser.drivers.LocalMobileDriver;
 import com.github.mikkimesser.helpers.Attach;
 
 import io.qameta.allure.selenide.AllureSelenide;
@@ -16,9 +17,19 @@ import static com.github.mikkimesser.helpers.Attach.sessionId;
 import static io.qameta.allure.Allure.step;
 
 public class TestBase {
+
+    static String deviceHost = System.getProperty("deviceHost", "browserstack");
+
     @BeforeAll
     public static void setup() {
-        Configuration.browser = BrowserstackMobileDriver.class.getName();
+        switch (deviceHost) {
+            case "browserstack":
+                Configuration.browser = BrowserstackMobileDriver.class.getName();
+                break;
+            default:
+                Configuration.browser = LocalMobileDriver.class.getName();
+        }
+
         Configuration.browserSize = null;
     }
 
@@ -38,6 +49,8 @@ public class TestBase {
 
         step("Close driver", Selenide::closeWebDriver);
 
-        Attach.video(sessionId);
+        if (deviceHost.equals("browserstack")) {
+            Attach.video(sessionId);
+        }
     }
 }

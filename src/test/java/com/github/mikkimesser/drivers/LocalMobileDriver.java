@@ -1,9 +1,11 @@
 package com.github.mikkimesser.drivers;
 
 import com.codeborne.selenide.WebDriverProvider;
+import com.github.mikkimesser.configuration.DeviceHostConfig;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.remote.AutomationName;
+import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 
@@ -29,25 +31,28 @@ public class LocalMobileDriver implements WebDriverProvider {
     public WebDriver createDriver(Capabilities capabilities) {
         File app = getApp();
 
+        DeviceHostConfig deviceHostConfig = ConfigFactory.create(DeviceHostConfig.class, System.getProperties());
+
         UiAutomator2Options options = new UiAutomator2Options();
         options.merge(capabilities);
         options.setAutomationName(AutomationName.ANDROID_UIAUTOMATOR2);
-        options.setPlatformName("Android");
-//        options.setDeviceName("RFCR90ZMNQP");
-        options.setDeviceName("Pixel 4 API 30");
-//        options.setPlatformVersion("12.0");
-        options.setPlatformVersion("11.0");
+        options.setPlatformName(deviceHostConfig.platformName());
+        options.setDeviceName(deviceHostConfig.device());
+        options.setPlatformVersion(deviceHostConfig.osVersion());
         options.setApp(app.getAbsolutePath());
-        options.setAppPackage("org.wikipedia.alpha");
-        options.setAppActivity("org.wikipedia.main.MainActivity");
+        options.setAppPackage(deviceHostConfig.appPackage());
+        options.setAppActivity(deviceHostConfig.appActivity());
 
         return new AndroidDriver(getAppiumServerUrl(), options);
     }
 
     private File getApp() {
-        String appUrl = "https://github.com/wikimedia/apps-android-wikipedia/" +
-                "releases/download/latest/app-alpha-universal-release.apk";
-        String appPath = "src/test/resources/apps/app-alpha-universal-release.apk";
+        DeviceHostConfig deviceHostConfig = ConfigFactory.create(DeviceHostConfig.class, System.getProperties());
+
+        String appUrl = deviceHostConfig.appURL();
+        System.out.println(appUrl);
+        String appPath = deviceHostConfig.appPath();
+        System.out.println(appPath);
 
         File app = new File(appPath);
         if (!app.exists()) {

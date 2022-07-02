@@ -1,7 +1,7 @@
 package com.github.mikkimesser.drivers;
 
 import com.codeborne.selenide.WebDriverProvider;
-import com.github.mikkimesser.configuration.BrowserstackConfig;
+import com.github.mikkimesser.configuration.DeviceHostConfig;
 import org.aeonbits.owner.ConfigFactory;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.MutableCapabilities;
@@ -18,16 +18,16 @@ public class BrowserstackMobileDriver implements WebDriverProvider {
         MutableCapabilities mutableCapabilities = new MutableCapabilities();
         mutableCapabilities.merge(capabilities);
         // Set your access credentials
-        BrowserstackConfig browserstackConfig = ConfigFactory.create(BrowserstackConfig.class);
-        mutableCapabilities.setCapability("browserstack.user", browserstackConfig.login());
-        mutableCapabilities.setCapability("browserstack.key", browserstackConfig.password());
+        DeviceHostConfig deviceHostConfig = ConfigFactory.create(DeviceHostConfig.class);
+        mutableCapabilities.setCapability("browserstack.user", deviceHostConfig.login());
+        mutableCapabilities.setCapability("browserstack.key", deviceHostConfig.password());
 
         // Set URL of the application under test
-        mutableCapabilities.setCapability("app", browserstackConfig.applId());
+        mutableCapabilities.setCapability("app", deviceHostConfig.applId());
 
         // Specify device and os_version for testing
-        mutableCapabilities.setCapability("device", browserstackConfig.device());
-        mutableCapabilities.setCapability("os_version", browserstackConfig.osVersion());
+        mutableCapabilities.setCapability("device", deviceHostConfig.device());
+        mutableCapabilities.setCapability("os_version", deviceHostConfig.osVersion());
 
         // Set other BrowserStack capabilities
         mutableCapabilities.setCapability("project", "QA.GURU homework lesson 12/21");
@@ -38,8 +38,8 @@ public class BrowserstackMobileDriver implements WebDriverProvider {
 
     public static URL getBrowserstackUrl() {
         try {
-            BrowserstackConfig browserstackConfig = ConfigFactory.create(BrowserstackConfig.class);
-            return new URL(browserstackConfig.browserstackURL());
+            DeviceHostConfig deviceHostConfig = ConfigFactory.create(DeviceHostConfig.class);
+            return new URL(deviceHostConfig.browserstackURL());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,6 @@
 package com.github.mikkimesser.helpers;
 
-import com.github.mikkimesser.configuration.BrowserstackConfig;
+import com.github.mikkimesser.configuration.DeviceHostConfig;
 import org.aeonbits.owner.ConfigFactory;
 
 import static io.restassured.RestAssured.given;
@@ -9,13 +9,13 @@ import static java.lang.String.format;
 public class Browserstack {
 
     public static String videoUrl(String sessionId) {
-        BrowserstackConfig browserstackConfig = ConfigFactory.create(BrowserstackConfig.class);
+        DeviceHostConfig deviceHostConfig = ConfigFactory.create(DeviceHostConfig.class, System.getProperties());
 
-        String url = format(browserstackConfig.sessionJsonUrl(), sessionId);
+        String url = format(deviceHostConfig.sessionJsonUrl(), sessionId);
 
         //TODO: add owner-stored credentials
         return given()
-                .auth().basic(browserstackConfig.login(), browserstackConfig.password())
+                .auth().basic(deviceHostConfig.login(), deviceHostConfig.password())
                 .log().all()
                 .when()
                 .get(url)
